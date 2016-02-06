@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/', ['as' => 'site.index', 'uses' => 'SiteController@index']);
+Route::resource('tasks', 'TaskController');
