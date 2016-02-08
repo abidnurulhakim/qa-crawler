@@ -1,6 +1,6 @@
 <header class="main-header">
   <!-- Logo -->
-  <a href="{{ route('site.index') }}" class="logo">
+  <a href="{{ route('tasks.index') }}" class="logo">
     <!-- mini logo for sidebar mini 50x50 pixels -->
     <span class="logo-mini"><b>QAC</b></span>
     <!-- logo for regular state and mobile devices -->
@@ -21,22 +21,22 @@
         <li class="dropdown tasks-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-flag-o"></i>
-            <span class="label label-danger">9</span>
+            <span class="label label-danger">{{ \Auth::user()->tasks()->where('status', '!=', \App\Model\Task::STATUS_FINISH)->count() }}</span>
           </a>
           <ul class="dropdown-menu">
-            <li class="header">You have 9 tasks</li>
+            <li class="header">You have {{ \Auth::user()->tasks()->where('status', '!=', \App\Model\Task::STATUS_FINISH)->count() }} tasks</li>
             <li>
               <!-- inner menu: contains the actual data -->
               <ul class="menu">
                 <li><!-- Task item -->
                   <a href="#">
                     <h3>
-                      Design some buttons
-                      <small class="pull-right">20%</small>
+                      Finished Task
+                      <small class="pull-right">{{ (\Auth::user()->tasks->count() > 0) ? \Auth::user()->tasks()->where('status', \App\Model\Task::STATUS_FINISH)->count()/\Auth::user()->tasks->count()*100 : '100' }}%</small>
                     </h3>
                     <div class="progress xs">
-                      <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                        <span class="sr-only">20% Complete</span>
+                      <div class="progress-bar progress-bar-aqua" style="width: {{ (\Auth::user()->tasks->count() > 0) ? \Auth::user()->tasks()->where('status', \App\Model\Task::STATUS_FINISH)->count()/\Auth::user()->tasks->count()*100 : '100' }}%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                        <span class="sr-only">{{ (\Auth::user()->tasks->count() > 0) ? \Auth::user()->tasks()->where('status', \App\Model\Task::STATUS_FINISH)->count()/\Auth::user()->tasks->count()*100 : '100' }}% Complete</span>
                       </div>
                     </div>
                   </a>
@@ -51,16 +51,16 @@
         <!-- User Account: style can be found in dropdown.less -->
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <img src="assets/img/user2-160x160.jpg" class="user-image" alt="User Image">
-            <span class="hidden-xs">Alexander Pierce</span>
+            <img src="http://lorempixel.com/160/160" class="user-image" alt="User Image">
+            <span class="hidden-xs">{{ \Auth::user()->username }}</span>
           </a>
           <ul class="dropdown-menu">
             <!-- User image -->
             <li class="user-header">
-              <img src="assets/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+              <img src="http://lorempixel.com/160/160" class="img-circle" alt="User Image">
               <p>
-                Alexander Pierce - Web Developer
-                <small>Member since Nov. 2012</small>
+                {{ \Auth::user()->username }} - {{ \Auth::user()->group_type }}
+                <small>Member since {{ \Auth::user()->created_at->diffForHumans() }}</small>
               </p>
             </li>
             <!-- Menu Body -->
@@ -78,7 +78,7 @@
             <!-- Menu Footer-->
             <li class="user-footer">
               <div class="pull-right">
-                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                <a href="{{ route('auth.logout') }}" class="btn btn-default btn-flat">Sign out</a>
               </div>
             </li>
           </ul>

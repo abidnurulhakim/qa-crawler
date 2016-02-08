@@ -1,6 +1,6 @@
 ;(function ( window, document, undefined ) {
     var path = {
-        plugins : $myPrefix + 'assets/plugins/'
+        plugins : myPrefix + 'assets/plugins/'
     };
 
     var assets = {
@@ -24,7 +24,6 @@
             Site.dataTables();
             Site.lockscreen();
             Site.iCheck();
-            Site.addEntryBarang();
             Site.buttonDelete();
         },
         fastClick: function () {
@@ -84,88 +83,21 @@
             ]);
 
         },
-        addEntryBarang : function() {
-            if ($("#add-entry").length < 1 || $("table.list-entry").length < 1) return;
-            console.log("init data entry");
-            $(document).on("click", "#btn-add-stuff", function(){
-                $inputs = {};
-                $inputEntry = $("#add-entry").find(".input-entry");
-                $validate = true;
-                $inputEntry.each(function(){
-                    if ($(this).val().trim().length < 1 || $(this).val() < 1) {
-                        $validate = false;
-                    } else {
-                        $inputs[$(this).prop("id")] = $(this).val().trim();
-                    }
-                });
-                $resultArray = [];
-                if ($inputs["inputNamaBarang"] != undefined) {
-                    $resultArray.push($inputs["inputNamaBarang"]);
-                }
-                if ($inputs["inputJumlahBarang"] != undefined) {
-                    $resultArray.push($inputs["inputJumlahBarang"]);
-                }
-                if ($inputs["inputBeratBarang"] != undefined) {
-                    $resultArray.push($inputs["inputBeratBarang"]);
-                    if ($inputs["inputJenisBarang"] != undefined) {
-                        $resultArray.push($inputs["inputJenisBarang"]);
-                        $resultArray.push($inputs["inputJenisBarang"] * $inputs["inputBeratBarang"]);
-                    }
-                }
-                if ($validate) {
-                    Site.addEntryToTable($resultArray);
-                    if ($("table.list-entry > tfoot").length > 0) {
-                        $value = $("table.list-entry > tfoot").children("tr").children("td.grand-total").html().trim().substr(4);
-                        console.log($value);
-                        $value = numeral().unformat($value);
-                        $value += $inputs["inputJenisBarang"] * $inputs["inputBeratBarang"];
-                        $value = numeral($value).format('0,0');
-                        $("table.list-entry > tfoot").children("tr").children("td.grand-total").html("Rp. "+$value);
-                    }
-                }
-            });
-        },
-        addEntryToTable : function(array) {
-            if ($("table.list-entry").length > 0) {
-                $table = $("table.list-entry > tbody");
-                $row = "<tr>";
-                for (var i = 0; i < array.length; i++) {
-                    if (typeof array[i] == 'number') {
-                        $row += "<td>" + numeral(array[i]).format('0.0') + "</td>";
-                    } else {
-                        $row += "<td>" + array[i] + "</td>";
-                    }
-                }
-                $row += "<td><div class='btn btn-flat btn-danger btn-xs btn-delete'>Hapus</div></td>";
-                $row += "</tr>";
-                $table.append($row);
-            }
-        },
         buttonDelete : function() {
             $(document).on("click", ".btn-delete", function(){
-                $href = ($(this).prop("href") != undefined) ?  $(this).prop("href") : (($(this).data("href") != undefined) ? $(this).data("href") : "");
-                $token = ($(this).data("token") != undefined) ?  $(this).data("token") : "";
+                $href = $(this).data("href");
+                $token = $(this).data("token");
                 if ($href.trim().length > 0 && $token.trim().length > 0) {
                     $answer = confirm("Anda yakin ingin menghapus tersebut!");
                     if ($answer == true) {
                         $.ajax({
                             url: $href,
-                            method: "DELETE"
+                            method: "DELETE",
+                            data: { _token: $token }
                         }).done(function() {
-                            $(this).parent().parent().remove();
+                            location.reload();
                         });
                     }
-                } else {
-                    $td = $(this).parent();
-                    if ($("table.list-entry > tfoot").length > 0) {
-                       $before = $td.prev();
-                       $value = numeral().unformat($before.html());
-                       $grandTotal = $("table.list-entry > tfoot").children("tr").children("td.grand-total").html().trim().substr(4);
-                       $grandTotal = numeral().unformat($grandTotal);
-                       $grandTotal = numeral($grandTotal-$value).format('0,0');
-                       $("table.list-entry > tfoot").children("tr").children("td.grand-total").html("Rp. "+$grandTotal);
-                    }
-                    $(this).parent().parent().remove();
                 }
             });
         }

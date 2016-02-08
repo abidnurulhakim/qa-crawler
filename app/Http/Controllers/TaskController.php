@@ -7,11 +7,15 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Model\Task;
+use App\Model\UrlLog;
+
+use Illuminate\Auth\Guard;
 
 class TaskController extends Controller
 {
     
-    public function __construct($foo = null) {
+    public function __construct() {
+        $this->middleware('auth');
         \View::share('navTask', true);
     }
     /**
@@ -19,18 +23,9 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Guard $auth)
     {
-        /*$html = file_get_contents('https://www.tanyadok.com/artikel-konsultasi/190970-2');
-        $dom = new \DOMDocument;
-
-        //Parse the HTML. The @ is used to suppress any parsing errors
-        //that will be thrown if the $html string isn't valid XHTML.
-        @$dom->loadHTML($html);
-        $article = $dom->getElementsByTagName('article');
-        dd($article[0]->getElementsByTagName('div')[0]->getAttribute('class'));
-        return $html;*/
-        $tasks = Task::all();
+        $tasks = $auth->user()->tasks;
         return view('tasks.index', compact('tasks'));
     }
 
@@ -53,49 +48,19 @@ class TaskController extends Controller
      */
     public function store(Guard $auth, Request $request)
     {
-        $url_crawling = $request->get('url_crawling');
         $task = new Task();
-        $task->url_crawling = $url_crawling;
+        $task->fill($request->all());
         $task->user_id = $auth->user()->id;
         $task->status = Task::STATUS_RUNNING;
         if ($task->save()) {
+            $urlLog = new UrlLog();
+            $urlLog->task_id = $task->id;
+            $urlLog->url = $request->get('url_index_crawl');
+            $urlLog->save();
+            exec('nohup php crawlprocess.php '.route('crawl.crawling', ['id' => $task->id]).' &',$op);        
             return redirect()->route('tasks.index');
         }
         return redirect()->back();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**
@@ -106,6 +71,9 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $task = Task::findOrFail($id);
+        if (!is_null($task)) {
+            $task->delete();
+        }
     }
 }

@@ -19,7 +19,9 @@
             <tr>
               <th>ID</th>
               <th>Status</th>
-              <th>URL Crawling</th>
+              <th>URL Index Crawling</th>
+              <th>URL Article Crawling</th>
+              <th>URL Pagination Crawling</th>
               <th>Created At</th>
               <th>Action</th>
             </tr>
@@ -29,7 +31,9 @@
             <tr>
               <td>{{ $task->id }}</td>
               <td>{{ $task->status }}</td>
-              <td>{{ $task->url_crawling }}</td>
+              <td>{{ $task->url_index_crawl }}</td>
+              <td>{{ $task->url_article_crawl }}</td>
+              <td>{{ $task->url_pagination_crawl }}</td>
               <td>{{ $task->created_at }}</td>
               <td>
                 @if ($task->status === $task::STATUS_RUNNING)

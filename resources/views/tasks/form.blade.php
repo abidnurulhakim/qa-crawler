@@ -1,8 +1,22 @@
 {!! Form::model($task, array('route' => ($task->exists ? array('tasks.update', $task->id) : array('tasks.store')), 'method' => ($task->exists ? 'PUT' : 'POST'))) !!}
 <div class="form-group">
-  <label for="inputEmail3" class="col-sm-2 control-label">URL Crawling</label>
-  <div class="col-sm-10">
-    {!! Form::text('url_crawling', $task->url_crawling, ['class' => 'form-control']); !!}
+  <label for="inputEmail3" class="col-sm-3 control-label">URL Index Crawling</label>
+  <div class="col-sm-9">
+    {!! Form::text('url_index_crawl', $task->url_index_crawl, ['class' => 'form-control', 'placeholder' => 'URL Article Crawl']); !!}
+  </div>
+</div>
+<br><br><br>
+<div class="form-group">
+  <label for="inputEmail3" class="col-sm-3 control-label">URL Article Crawling</label>
+  <div class="col-sm-9">
+    {!! Form::text('url_article_crawl', $task->url_article_crawl, ['class' => 'form-control', 'placeholder' => 'URL Article Crawl']); !!}
+  </div>
+</div>
+<br><br>
+<div class="form-group">
+  <label for="inputEmail3" class="col-sm-3 control-label">URL Pagination Crawling</label>
+  <div class="col-sm-9">
+    {!! Form::text('url_pagination_crawl', $task->url_pagination_crawl, ['class' => 'form-control', 'placeholder' => 'URL Pagination Crawl']); !!}
   </div>
 </div>
 <br><br>

@@ -12,8 +12,9 @@ class AlterTasksTable extends Migration
      */
     public function up()
     {
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->dropColoumn(['url_crawling']);
+        Schema::table('tasks', function ($table) {
+            $table->dropColumn(['url_crawling']);
+            $table->string('url_index_crawl')->nullable();
             $table->string('url_article_crawl')->nullable();
             $table->string('url_pagination_crawl')->nullable();
         });
@@ -26,8 +27,8 @@ class AlterTasksTable extends Migration
      */
     public function down()
     {
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->dropColoumn(['url_article_crawl', 'url_pagination_crawl']);
+        Schema::table('tasks', function ($table) {
+            $table->dropColoumn(['url_index_crawl', 'url_article_crawl', 'url_pagination_crawl']);
             $table->string('url_crawling')->nullable();
         });
     }

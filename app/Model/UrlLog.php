@@ -4,11 +4,9 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Task extends Model
+class UrlLog extends Model
 {
-
-    const STATUS_RUNNING = "Running";
-    const STATUS_STOP = "Stop";
+    const STATUS_WAITING = "Waiting";    
     const STATUS_FINISH = "Finish";
 
     /**
@@ -16,7 +14,7 @@ class Task extends Model
      *
      * @var string
      */
-    protected $table = 'tasks';
+    protected $table = 'url_logs';
 
     /**
      * The attributes that are mass assignable.
@@ -25,14 +23,12 @@ class Task extends Model
      */
     protected $fillable = [
         'user_id',
-        'status',
-        'url_article_crawl',
-        'url_pagination_crawl',
-        'url_index_crawl'
+        'url',
+        'status'
     ];
 
-    public function user()
+    public function task()
     {
-        return $this->belongsTo('App\Model\User', 'user_id', 'id');
+        return $this->belongsTo('App\Model\Task', 'task_id', 'id');
     }
 }

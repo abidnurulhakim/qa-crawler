@@ -42,7 +42,7 @@
       @include('_includes.control-sidebar')
 
     </div><!-- ./wrapper -->
-    <script type="text/javascript"> $myPrefix = "";</script>
+    <script type="text/javascript"> myPrefix = "";</script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
   </body>
 </html>

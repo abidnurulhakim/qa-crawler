@@ -11,9 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('auth/login', ['as' => 'auth.index', 'middleware' => 'guest', 'uses' => 'SiteController@login']);
+Route::post('auth/login', ['as' => 'auth.login', 'middleware' => 'guest', 'uses' => 'SiteController@signin']);
+Route::get('auth/logout', ['as' => 'auth.logout', 'middleware' => 'auth', 'uses' => 'SiteController@logout']);
+Route::get('auth/register', ['as' => 'auth.create', 'middleware' => 'guest', 'uses' => 'SiteController@register']);
+Route::post('auth/register', ['as' => 'auth.register', 'middleware' => 'guest', 'uses' => 'SiteController@store']);
 
-Route::get('/', ['as' => 'site.index', 'uses' => 'SiteController@index']);
 Route::resource('tasks', 'TaskController');
+Route::get('crawling/{id?}', ['as' => 'crawl.crawling', 'uses' => 'CrawlController@crawl']);
