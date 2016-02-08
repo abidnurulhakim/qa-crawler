@@ -57,8 +57,7 @@ class TaskController extends Controller
             $urlLog->task_id = $task->id;
             $urlLog->url = $request->get('url_index_crawl');
             $urlLog->save();
-            exec('nohup php crawlprocess.php '.route('crawl.crawling', ['id' => $task->id]).' &',$op);        
-            return redirect()->route('tasks.index');
+            return redirect()->away(env('URL').'crawlprocess.php?url='.route('crawl.crawling', ['id' => $task->id])."&redirect=".route('tasks.index'));
         }
         return redirect()->back();
     }
