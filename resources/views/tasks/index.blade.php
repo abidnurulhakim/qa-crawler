@@ -41,6 +41,7 @@
                 @elseif ($task->status === $task::STATUS_STOP)
                 <a href="{{ route('tasks.edit', $task) }}" class="btn btn-primary btn-sm btn-cell"><i class="fa fa-play"></i> <span>Play</span></a>
                 @else
+                <a href="{{ route('tasks.download', $task) }}" class="btn btn-success btn-sm btn-cell"><i class="fa fa-cloud-download"></i> <span>Download</span></a>
                 @endif
                 <!-- <a href="{{ route('tasks.edit', $task) }}" class="btn btn-success btn-sm btn-cell"><i class="fa fa-pencil"></i> <span>Edit</span></a> -->
                 <a data-href="{{ route('tasks.destroy', $task) }}" class="btn btn-danger btn-sm btn-cell btn-delete" data-token="{{ csrf_token() }}"><i class="fa fa-trash"></i> <span>Delete</span></a>

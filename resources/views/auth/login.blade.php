@@ -51,7 +51,7 @@
         <form action="index2.html" method="post">
           
         </form>
-        <a href="#">I forgot my password</a><br>
+        <a href="{{ route('auth.register') }}">Register</a><br>
       </div><!-- /.login-box-body -->
     </div><!-- /.login-box -->
 
