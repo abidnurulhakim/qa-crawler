@@ -31,7 +31,7 @@ class CrawlController extends Controller
                         $dom = new \DOMDocument;
                         $dom->loadHTML($html);
                         $articles = $dom->getElementsByTagName('article');
-                        if ($articles->length == 1) {
+                        if ($articles->length == 1 && (strpos(strtolower($urlLog->url), strtolower($task->url_article_crawl)) !== false)) {
                             $textCrawl = new TextCrawl();
                             $textCrawl->task_id = $urlLog->task_id;
                             $textCrawl->text = $dom->saveHTML($articles[0]);
