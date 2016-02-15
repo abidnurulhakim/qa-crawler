@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterTasksTable extends Migration
+class AlterTasktasksTableAddMaxDocument extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,7 @@ class AlterTasksTable extends Migration
     public function up()
     {
         Schema::table('tasks', function ($table) {
-            $table->dropColumn(['url_crawling']);
-            $table->string('url_index_crawl')->nullable();
-            $table->string('url_article_crawl')->nullable();
-            $table->string('url_pagination_crawl')->nullable();
+            $table->integer('max_document')->default(500)->unsigned;
         });
     }
 
@@ -28,8 +25,7 @@ class AlterTasksTable extends Migration
     public function down()
     {
         Schema::table('tasks', function ($table) {
-            $table->dropColumn(['url_index_crawl', 'url_article_crawl', 'url_pagination_crawl']);
-            $table->string('url_crawling')->nullable();
+            $table->dropColumn('max_document');
         });
     }
 }

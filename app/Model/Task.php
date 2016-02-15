@@ -28,11 +28,18 @@ class Task extends Model
         'status',
         'url_article_crawl',
         'url_pagination_crawl',
-        'url_index_crawl'
+        'url_index_crawl',
+        'type_document',
+        'max_document'
     ];
 
     public function user()
     {
         return $this->belongsTo('App\Model\User', 'user_id', 'id');
+    }
+
+    public function texts()
+    {
+        return $this->hasMany('App\Model\TextCrawl', 'task_id', 'id');
     }
 }

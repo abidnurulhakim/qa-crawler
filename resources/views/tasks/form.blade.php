@@ -1,5 +1,19 @@
 {!! Form::model($task, array('route' => ($task->exists ? array('tasks.update', $task->id) : array('tasks.store')), 'method' => ($task->exists ? 'PUT' : 'POST'))) !!}
 <div class="form-group">
+  <label for="inputEmail3" class="col-sm-3 control-label">Type Document Crawl</label>
+  <div class="col-sm-9">
+    {!! Form::select('type_document', array('Raw' => 'Raw', 'Article' => 'Article'), 'Raw'); !!}
+  </div>
+</div>
+<br><br>
+<div class="form-group">
+  <label for="inputEmail3" class="col-sm-3 control-label">Max Document</label>
+  <div class="col-sm-9">
+    {!! Form::number('max_document', $task->max_document); !!}
+  </div>
+</div>
+<br><br>
+<div class="form-group">
   <label for="inputEmail3" class="col-sm-3 control-label">URL Index Crawling</label>
   <div class="col-sm-9">
     {!! Form::text('url_index_crawl', $task->url_index_crawl, ['class' => 'form-control', 'placeholder' => 'URL Article Crawl']); !!}

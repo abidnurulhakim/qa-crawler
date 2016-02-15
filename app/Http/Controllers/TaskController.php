@@ -50,6 +50,9 @@ class TaskController extends Controller
     public function store(Guard $auth, Request $request)
     {
         $task = new Task();
+        if ($request->get('max_document') <= 0) {
+            $request->merge(['max_document' => 500]);
+        }
         $task->fill($request->all());
         $task->user_id = $auth->user()->id;
         $task->status = Task::STATUS_RUNNING;
@@ -81,7 +84,7 @@ class TaskController extends Controller
     public function getTexts(Guard $auth, $taskId)
     {
         $task = Task::findOrFail($taskId);
-        $texts = TextCrawl::where('task_id', $taskId)->get();
+        $texts = TextCrawl::where('task_id', $taskId)->take($task->max_document)->get();
         $title = "crawl/".$task->id."_".\Carbon\Carbon::now()->format('Y-m-d-His')."_texts.txt";
         foreach ($texts as $text) {
             file_put_contents($title, $text->text."\n", FILE_APPEND);

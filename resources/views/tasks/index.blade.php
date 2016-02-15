@@ -19,6 +19,8 @@
             <tr>
               <th>ID</th>
               <th>Status</th>
+              <th>Type</th>
+              <th>Max</th>
               <th>URL Index Crawling</th>
               <th>URL Article Crawling</th>
               <th>URL Pagination Crawling</th>
@@ -31,13 +33,15 @@
             <tr>
               <td>{{ $task->id }}</td>
               <td>{{ $task->status }}</td>
+              <td>{{ $task->type_document }}</td>
+              <td>{{ $task->max_document }}</td>
               <td>{{ $task->url_index_crawl }}</td>
               <td>{{ $task->url_article_crawl }}</td>
               <td>{{ $task->url_pagination_crawl }}</td>
               <td>{{ $task->created_at }}</td>
               <td>
                 @if ($task->status === $task::STATUS_RUNNING)
-                <a href="{{ route('tasks.edit', $task) }}" class="btn btn-warning btn-sm btn-cell"><i class="fa fa-stop"></i> <span>Stop</span></a>
+                <a href="{{ route('tasks.edit', $task) }}" class="btn btn-warning btn-sm btn-cell"><i class="fa fa-pause"></i> <span>Pause</span></a>
                 @elseif ($task->status === $task::STATUS_STOP)
                 <a href="{{ route('tasks.edit', $task) }}" class="btn btn-primary btn-sm btn-cell"><i class="fa fa-play"></i> <span>Play</span></a>
                 @else

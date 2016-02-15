@@ -23,42 +23,77 @@ class CrawlController extends Controller
                 libxml_use_internal_errors(true);
                 $urlLog = UrlLog::where('task_id', $id)->where('status', \App\Model\UrlLog::STATUS_WAITING)->first();
                 $status = 201;
-                if (!is_null($urlLog)) {
+                $countDocuments = $task->texts()->count();
+                if (!is_null($urlLog) && ($countDocuments < $task->max_document)) {
                     $status = 200;
                     $task = $urlLog->task;
                     try {
                         $html = file_get_contents($urlLog->url);
                         $dom = new \DOMDocument;
                         $dom->loadHTML($html);
-                        $articles = $dom->getElementsByTagName('article');
-                        if ($articles->length == 1 && (strpos(strtolower($urlLog->url), strtolower($task->url_article_crawl)) !== false)) {
-                            $textCrawl = new TextCrawl();
-                            $textCrawl->task_id = $urlLog->task_id;
-                            $textCrawl->text = $dom->saveHTML($articles[0]);
-                            $textCrawl->save();
-                        } else {
-                            $urls = $dom->getElementsByTagName('a');
-                            foreach ($urls as $url) {
-                                if ((strpos(strtolower($url->getAttribute("href")), strtolower($task->url_article_crawl)) !== false) || (strpos(strtolower($url->getAttribute("href")), strtolower($task->url_pagination_crawl)) !== false)) {
-                                    if (UrlLog::where('url', $url->getAttribute("href"))->where('task_id', $id)->count() < 1) {
-                                        $newUrlLog = new UrlLog();
-                                        $newUrlLog->task_id = $id;
-                                        $newUrlLog->url = $url->getAttribute("href");
-                                        $newUrlLog->status = $newUrlLog::STATUS_WAITING;
-                                        $newUrlLog->save();
+                        if ($task->type_document === 'Article') {
+                            $articles = $dom->getElementsByTagName('article');
+                            if ($articles->length == 1 && (strpos(strtolower($urlLog->url), strtolower($task->url_article_crawl)) !== false) && (strpos(strtolower($urlLog->url), strtolower($task->url_pagination_crawl)) === false)) {
+                                $textCrawl = new TextCrawl();
+                                $textCrawl->task_id = $urlLog->task_id;
+                                $textCrawl->text = $dom->saveHTML($articles[0]);
+                                $textCrawl->save();
+                            } else {
+                                $urls = $dom->getElementsByTagName('a');
+                                foreach ($urls as $url) {
+                                    $link = preg_replace('/\/$/', '', $url->getAttribute("href"));
+                                    if ((strpos(strtolower($link), strtolower($task->url_article_crawl)) !== false) || (strpos(strtolower($link), strtolower($task->url_pagination_crawl)) !== false)) {
+                                        $sub = explode(strtolower($task->url_article_crawl), $link);
+                                        if (strpos($sub[1], '/') === false) {
+                                            if (UrlLog::where('url', $link)->where('task_id', $id)->count() < 1) {
+                                                $newUrlLog = new UrlLog();
+                                                $newUrlLog->task_id = $id;
+                                                $newUrlLog->url = $link;
+                                                $newUrlLog->status = $newUrlLog::STATUS_WAITING;
+                                                $newUrlLog->save();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else if ($task->type_document === 'Raw') {
+                            if ((strpos(strtolower($urlLog->url), strtolower($task->url_article_crawl)) !== false) && (strpos(strtolower($urlLog->url), strtolower($task->url_pagination_crawl)) === false)) {
+                                $textCrawl = new TextCrawl();
+                                $textCrawl->task_id = $urlLog->task_id;
+                                $textCrawl->text = $dom->saveHTML();
+                                $textCrawl->save();
+                            } else {
+                                $urls = $dom->getElementsByTagName('a');
+                                foreach ($urls as $url) {
+                                    $link = preg_replace('/\/$/', '', $url->getAttribute("href"));
+                                    if ((strpos(strtolower($link), strtolower($task->url_article_crawl)) !== false) || (strpos(strtolower($link), strtolower($task->url_pagination_crawl)) !== false)) {
+                                        $sub = explode(strtolower($task->url_article_crawl), $link);
+                                        if (strpos($sub[1], '/') === false) {
+                                            if (UrlLog::where('url', $link)->where('task_id', $id)->count() < 1) {
+                                                $newUrlLog = new UrlLog();
+                                                $newUrlLog->task_id = $id;
+                                                $newUrlLog->url = $link;
+                                                $newUrlLog->status = $newUrlLog::STATUS_WAITING;
+                                                $newUrlLog->save();
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                        
                     } catch (Exception $e) {}
                     $urlLog->status =  $urlLog::STATUS_FINISH;
                     $urlLog->save();
                 } else {
                     $task->status = $task::STATUS_FINISH;
                     $task->save();
+                    UrlLog::where('task_id', $task->id)
+                              ->where('status', \App\Model\UrlLog::STATUS_WAITING)
+                              ->update(['status' => \App\Model\UrlLog::STATUS_FINISH]);
                 }
                 libxml_use_internal_errors(false);
-                if ($status === 201 && is_null($urlLog)) {
+                if ($status === 201 && (is_null($urlLog) || ($countDocuments < $task->max_document))) {
                     $this->sendNotification($task->id);
                 }
             }
